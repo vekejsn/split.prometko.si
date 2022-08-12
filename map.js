@@ -62,6 +62,7 @@ async function main() {
                             popupAnchor: [0, 0],
                             html: `<p class="icon">${bus.routecode}</p> <div class="tooltip-inactive">${bus.name.replace(/[^\d-]/g, "")}</div>`
                         }));
+                    markers[bus.id].setOpacity(0.5);
                 }
             } else {
                 markers[bus.id] = L.marker([bus.latitude, bus.longitude]).addTo(busLayer);
@@ -86,6 +87,7 @@ async function main() {
                             popupAnchor: [0, 0],
                             html: `<p class="icon">${bus.routecode}</p> <div class="tooltip-inactive">${bus.name.replace(/[^\d-]/g, "")}</div>`
                         }));
+                    markers[bus.id].setOpacity(0.5);
                 }
                 markers[bus.id].on('click', async (e) => {
                     // generate popup content
@@ -223,7 +225,7 @@ async function showBusInfo(bus) {
         await L.polyline.antPath(coordinates, { "delay": 4000, color: '#102A83', weight: 6, opacity: 0.7, smoothFactor: 1 }).addTo(tempLayer);
     } else {
         rightdiv.innerHTML += `<p class="vehicleinfo"><b>Linija:</b> <span class="route_name_number">${bus.routecode}</span> ${bus.tripname}</p>`;
-        rightdiv.innerHTML += `<p class="vehicleinfo"><b>Zabilježen: </b>${new Date(bus.timestamp).toLocaleString('sr-RS').split(" ").reverse().join(", ")}</p>`;
+        rightdiv.innerHTML += `<p class="vehicleinfo"><b>Zadnje zabilježen: </b>${new Date(bus.timestamp).toLocaleString('sr-RS').split(" ").reverse().join(", ")}</p>`;
         row.appendChild(leftdiv);
         row.appendChild(rightdiv);
         container.appendChild(row);
@@ -267,6 +269,56 @@ async function showStops() {
     });
 
 }
+
+document.getElementById('search-input').addEventListener('keyup', async (e) => {
+    document.getElementById('sidebar').hidden = true;
+    let search = document.getElementById('search-input').value.toUpperCase().replace(/Š/g, 'S').replace(/Đ/g, 'D').replace(/Č/g, 'C').replace(/Ć/g, 'C').replace(/Ž/g, 'Z');
+    // remove spaces and make uppercase
+    search = search.replace(/\s/g, '').toUpperCase();
+    if (search === '' || search.length < 2) {
+        document.getElementById('search-results').innerHTML = '';
+        return;
+    }
+    let results = [];
+    //console.log(busObject);
+    for (let i in markers) {
+        let busData = await busObject.find(b => parseInt(b.id) == parseInt(markers[i].data.name.replace(/[^\d-]/g, "")));
+        if (markers[i].data.departureTime && (markers[i].data.routeCode.toString().toUpperCase().includes(search) 
+        || markers[i].data.tripName.toUpperCase().replace(/Š/g, 'S').replace(/Đ/g, 'D').replace(/Č/g, 'C').replace(/Ć/g, 'C').replace(/Ž/g, 'Z').includes(search) 
+        || markers[i].data.name.toUpperCase().includes(search))) {
+            results.push(markers[i].data);
+        } else if (busData && busData.model.toUpperCase().includes(search)) {
+            results.push(markers[i].data);
+        } else if (busData && busData.plates.toUpperCase().includes(search)) {
+            results.push(markers[i].data);
+        } else if (markers[i].data.name.toUpperCase().includes(search)) {
+            results.push(markers[i].data);
+        }
+    }
+    if (results.length === 0) {
+        document.getElementById('search-results').innerHTML = '';
+        return;
+    }
+    // if there is results, show them - make UL
+    let ul = document.createElement('ul');
+    // list-group
+    ul.className = 'list-group';
+    results.forEach(async result => {
+        let li = document.createElement('li');
+        li.className = 'list-group-item';
+        li.innerHTML = result.departureTime ? `<span class="route_name_number">${result.routeCode}</span> g.br. <b>${result.name.replace(/[^\d-]/g, "")}</b>` : `g.br. <b>${result.name.replace(/[^\d-]/g, "")}</b>`;
+        li.addEventListener('click', async (e) => {
+            // find marker with same id, and center on it on zoom level 16
+            document.getElementById('search-results').innerHTML = '';
+            let marker = markers[result.id];
+            map.setView(marker.getLatLng(), 16);
+            showBusInfo(result);
+        });
+        ul.appendChild(li);
+    });
+    document.getElementById('search-results').innerHTML = '';
+    document.getElementById('search-results').appendChild(ul);
+});
 
 /*
 autobusi.org scraper
