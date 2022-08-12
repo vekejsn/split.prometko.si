@@ -41,32 +41,52 @@ async function main() {
         for (let bus of buses) {
             if (bus.name.replace(/[^\d.-]/g, "") == "") continue;
             if (markers[bus.id]) {
-                markers[bus.id].setLatLng([bus.latitude,bus.longitude]);
+                markers[bus.id].setLatLng([bus.latitude, bus.longitude]);
                 markers[bus.id].data = bus;
                 markers[bus.id].id = bus.id;
-                markers[bus.id].setIcon(
-                    L.divIcon({
-                        className: 'icon-vehicle',
-                        iconSize: [25, 25],
-                        iconAnchor: [12, 12],
-                        popupAnchor: [0, 0],
-                        html: `<p class="icon">${bus.routeCode}</p> <div class="tooltip-vehicle">${bus.name.replace(/[^\d-]/g, "")}</div>`
-                    })
-                );
+                if (bus.departureTime) {
+                    markers[bus.id].setIcon(
+                        L.divIcon({
+                            className: 'icon-vehicle',
+                            iconSize: [25, 25],
+                            iconAnchor: [12, 12],
+                            popupAnchor: [0, 0],
+                            html: `<p class="icon">${bus.routeCode}</p> <div class="tooltip-vehicle">${bus.name.replace(/[^\d-]/g, "")}</div>`
+                        }));
+                } else {
+                    markers[bus.id].setIcon(
+                        L.divIcon({
+                            className: 'icon-inactive',
+                            iconSize: [25, 25],
+                            iconAnchor: [12, 12],
+                            popupAnchor: [0, 0],
+                            html: `<p class="icon">${bus.routecode}</p> <div class="tooltip-inactive">${bus.name.replace(/[^\d-]/g, "")}</div>`
+                        }));
+                }
             } else {
-                markers[bus.id] = L.marker([bus.latitude,bus.longitude]).addTo(busLayer);
+                markers[bus.id] = L.marker([bus.latitude, bus.longitude]).addTo(busLayer);
                 // check last letter of stop name - if it's B, then use a different colour
                 markers[bus.id].data = bus;
                 markers[bus.id].id = bus.id;
-                markers[bus.id].setIcon(
-                    L.divIcon({
-                        className: 'icon-vehicle',
-                        iconSize: [25, 25],
-                        iconAnchor: [12, 12],
-                        popupAnchor: [0, 0],
-                        html: `<p class="icon">${bus.routeCode}</p> <div class="tooltip-vehicle">${bus.name.replace(/[^\d-]/g, "")}</div>`
-                    })
-                );
+                if (bus.departureTime) {
+                    markers[bus.id].setIcon(
+                        L.divIcon({
+                            className: 'icon-vehicle',
+                            iconSize: [25, 25],
+                            iconAnchor: [12, 12],
+                            popupAnchor: [0, 0],
+                            html: `<p class="icon">${bus.routeCode}</p> <div class="tooltip-vehicle">${bus.name.replace(/[^\d-]/g, "")}</div>`
+                        }));
+                } else {
+                    markers[bus.id].setIcon(
+                        L.divIcon({
+                            className: 'icon-inactive',
+                            iconSize: [25, 25],
+                            iconAnchor: [12, 12],
+                            popupAnchor: [0, 0],
+                            html: `<p class="icon">${bus.routecode}</p> <div class="tooltip-inactive">${bus.name.replace(/[^\d-]/g, "")}</div>`
+                        }));
+                }
                 markers[bus.id].on('click', async (e) => {
                     // generate popup content
                     showBusInfo(e.target.data);
@@ -92,6 +112,7 @@ async function showBusInfo(bus) {
             unknown: true
         }
     }
+    let tempLayer = L.layerGroup();
     console.log(busData);
     let container = document.createElement('div');
     container.id = bus.id;
@@ -105,93 +126,79 @@ async function showBusInfo(bus) {
     rightdiv.className = 'col-sm-9';
     rightdiv.innerHTML += `<br class="desktop-hidden" style="height:0.5rem"><h2 class="vehicleinfo">${bus.name.replace(/[^\d-]/g, "")} ${busData.unknown ? "" : `(${busData.plates})`}</h2>`;
     rightdiv.innerHTML += `<small class="vehicleinfo">${busData.unknown ? busData.model : `${busData.model} (${busData.type})`}</small><hr>`
-    rightdiv.innerHTML += `<p class="vehicleinfo"><b>Linija:</b> <span class="route_name_number">${bus.routeCode}</span> ${bus.tripName}</p>`;
-    if (bus.nextStopId) {
-        // resolve the stop
-        let nextStop = stopObject.find(stop => stop.id == bus.nextStopId);
-        rightdiv.innerHTML += `<p class="vehicleinfo"><b>Sljedeća stanica:</b> ${nextStop.name} <small>(${nextStop.id})</small></p>`;
-    }
-    if (bus.currentStopId && !bus.nextStopId) {
-        // resolve the stop
-        let nextStop = stopObject.find(stop => stop.id == bus.currentStopId);
-        rightdiv.innerHTML += `<p class="vehicleinfo"><b>Trenutna stanica:</b> ${nextStop.name} <small>(${nextStop.id})</small></p>`;
-    }
-    rightdiv.innerHTML += `<p class="vehicleinfo"><b>Zabilježen: </b>${new Date(bus.timestamp).toLocaleString('sr-RS').split(" ").reverse().join(", ")}</p>`;
-    row.appendChild(leftdiv);
-    row.appendChild(rightdiv);
-    container.appendChild(row);
-    container.innerHTML += `<hr>`;
-    // iterate through stations and generate view
-    let table = document.createElement('table');
-    table.style.width = '100%';
-    table.class = 'table table-dark';
-    // from our currentStopId or nextStopId, get the current stop, and from that the index of the stop in bus.stations
-    let currentStop = await bus.stations.find(stop => stop.id == bus.currentStopId);
-    let currentStopIndex = bus.stations.findIndex(stop => stop.id == bus.currentStopId);
-    let nextStop = await bus.stations.find(stop => stop.id == bus.nextStopId);
-    let nextStopIndex = bus.stations.findIndex(stop => stop.id == bus.nextStopId);
-    let index = currentStopIndex != -1 ? currentStopIndex : nextStopIndex;
-    for (let i = 0; i < bus.stations.length; i++) {
-        let stop = await stopObject.find(x => x.id == bus.stations[i].id);
-        if (i == 0 && bus.currentStopIndex == 0) {
-            table.innerHTML += `<tr class="stop-table-row" style='background-color: #102A83 !important; color:white'><td class="station-name" ><b>${stop.name}</b></td><td class="station-time">${bus.stations[i].plannedDepartureTime}</td></tr>`;
-        } else {
-            // compare the planned and expected departure time, and show the difference
-            let planned = bus.stations[i].plannedArrivalTime.split(":");
-            let expected = bus.stations[i].expectedArrivalTime.split(":");
-            planned = parseInt(planned[0]) * 60 * 60 + parseInt(planned[1]) * 60 + parseInt(planned[2]);
-            expected = parseInt(expected[0]) * 60 * 60 + parseInt(expected[1]) * 60 + parseInt(expected[2]);
-            let difference = expected - planned;
-            let differenceHours = Math.floor(difference / (60 * 60));
-            let differenceMinutes = Math.floor((difference - differenceHours * 60 * 60) / 60);
-            let differenceSeconds = Math.floor(difference - differenceHours * 60 * 60 - differenceMinutes * 60);
-            //console.log(differenceHours, differenceMinutes, differenceSeconds);
-            // check if bus.currentStopId || bus.nextStopId is equal to stop.id
-            if (bus.currentStopId == stop.id || bus.nextStopId == stop.id) {
-                // if it is, then highlight the row
-                table.innerHTML += `<tr class="stop-table-row" style='background-color: #102A83 !important; color:white'><td class="station-name"><b>${stop.name}</b><br>
-                ${difference > 60 ? `<small>Kasni ${differenceHours > 0 ? differenceHours + "h" : ""} ${differenceMinutes > 0 ? differenceMinutes + " min" : ""}</small>`: ""}
+    if (bus.departureTime) {
+        rightdiv.innerHTML += `<p class="vehicleinfo"><b>Linija:</b> <span class="route_name_number">${bus.routeCode}</span> ${bus.tripName}</p>`;
+        if (bus.nextStopId) {
+            // resolve the stop
+            let nextStop = stopObject.find(stop => stop.id == bus.nextStopId);
+            rightdiv.innerHTML += `<p class="vehicleinfo"><b>Sljedeća stanica:</b> ${nextStop.name} <small>(${nextStop.id})</small></p>`;
+        }
+        if (bus.currentStopId && !bus.nextStopId) {
+            // resolve the stop
+            let nextStop = stopObject.find(stop => stop.id == bus.currentStopId);
+            rightdiv.innerHTML += `<p class="vehicleinfo"><b>Trenutna stanica:</b> ${nextStop.name} <small>(${nextStop.id})</small></p>`;
+        }
+        rightdiv.innerHTML += `<p class="vehicleinfo"><b>Zabilježen: </b>${new Date(bus.timestamp).toLocaleString('sr-RS').split(" ").reverse().join(", ")}</p>`;
+        row.appendChild(leftdiv);
+        row.appendChild(rightdiv);
+        container.appendChild(row);
+        container.innerHTML += `<hr>`;
+        // iterate through stations and generate view
+        let table = document.createElement('table');
+        table.style.width = '100%';
+        table.class = 'table table-dark';
+        // from our currentStopId or nextStopId, get the current stop, and from that the index of the stop in bus.stations
+        let currentStop = await bus.stations.find(stop => stop.id == bus.currentStopId);
+        let currentStopIndex = bus.stations.findIndex(stop => stop.id == bus.currentStopId);
+        let nextStop = await bus.stations.find(stop => stop.id == bus.nextStopId);
+        let nextStopIndex = bus.stations.findIndex(stop => stop.id == bus.nextStopId);
+        let index = currentStopIndex != -1 ? currentStopIndex : nextStopIndex;
+        for (let i = 0; i < bus.stations.length; i++) {
+            let stop = await stopObject.find(x => x.id == bus.stations[i].id);
+            if (i == 0 && bus.currentStopIndex == 0) {
+                table.innerHTML += `<tr class="stop-table-row" style='background-color: #102A83 !important; color:white'><td class="station-name" ><b>${stop.name}</b></td><td class="station-time">${bus.stations[i].plannedDepartureTime}</td></tr>`;
+            } else {
+                // compare the planned and expected departure time, and show the difference
+                let planned = bus.stations[i].plannedArrivalTime.split(":");
+                let expected = bus.stations[i].expectedArrivalTime.split(":");
+                planned = parseInt(planned[0]) * 60 * 60 + parseInt(planned[1]) * 60 + parseInt(planned[2]);
+                expected = parseInt(expected[0]) * 60 * 60 + parseInt(expected[1]) * 60 + parseInt(expected[2]);
+                let difference = expected - planned;
+                let differenceHours = Math.floor(difference / (60 * 60));
+                let differenceMinutes = Math.floor((difference - differenceHours * 60 * 60) / 60);
+                let differenceSeconds = Math.floor(difference - differenceHours * 60 * 60 - differenceMinutes * 60);
+                //console.log(differenceHours, differenceMinutes, differenceSeconds);
+                // check if bus.currentStopId || bus.nextStopId is equal to stop.id
+                if (bus.currentStopId == stop.id || bus.nextStopId == stop.id) {
+                    // if it is, then highlight the row
+                    table.innerHTML += `<tr class="stop-table-row" style='background-color: #102A83 !important; color:white'><td class="station-name"><b>${stop.name}</b><br>
+                ${difference > 60 ? `<small>Kasni ${differenceHours > 0 ? differenceHours + "h" : ""} ${differenceMinutes > 0 ? differenceMinutes + " min" : ""}</small>` : ""}
                 </td><td class="station-time">
                 ${bus.stations[i].expectedArrivalTime.split('.')[0]}</td></tr>`;
-            } else if (i > index) {
-                table.innerHTML += `<tr class="stop-table-row" style="font-size:0.75rem"><td class="station-name"><b>${stop.name}</b><br>
-                ${difference > 60 ? `<small>Kasni ${differenceHours > 0 ? differenceHours + "h" : ""} ${differenceMinutes > 0 ? differenceMinutes + " min" : ""}</small>`: ""}
+                } else if (i > index) {
+                    table.innerHTML += `<tr class="stop-table-row" style="font-size:0.75rem"><td class="station-name"><b>${stop.name}</b><br>
+                ${difference > 60 ? `<small>Kasni ${differenceHours > 0 ? differenceHours + "h" : ""} ${differenceMinutes > 0 ? differenceMinutes + " min" : ""}</small>` : ""}
                 </td><td class="station-time">
                 ${bus.stations[i].expectedArrivalTime.split('.')[0]}</td></tr>`;
-            } else if ( i < index) {
-                table.innerHTML += `<tr class="stop-table-row" style="color:grey; font-size:0.75rem"><td class="station-name"><b>${stop.name}</b><br>
-                ${difference > 60 ? `<small>Kasnio ${differenceHours > 0 ? differenceHours + "h" : ""} ${differenceMinutes > 0 ? differenceMinutes + " min" : ""}</small>`: ""}
+                } else if (i < index) {
+                    table.innerHTML += `<tr class="stop-table-row" style="color:grey; font-size:0.75rem"><td class="station-name"><b>${stop.name}</b><br>
+                ${difference > 60 ? `<small>Kasnio ${differenceHours > 0 ? differenceHours + "h" : ""} ${differenceMinutes > 0 ? differenceMinutes + " min" : ""}</small>` : ""}
                 </td><td class="station-time">
                 ${bus.stations[i].expectedArrivalTime.split('.')[0]}</td></tr>`;
+                }
             }
-        }     
-    }
-    container.appendChild(table);
-    routeInfo.appendChild(container);
-    bottomData.innerHTML = '';
-    bottomData.appendChild(routeInfo);
-    bottomData.hidden = false;
-    // fetch https://api.prometko.cyou/prometSplit/route/trips/${bus.tripId}
-    let trip = await fetch(BASE_API_URL + `/prometSplit/route/trips/${bus.tripId}`).then(response => response.json()).then(data => data.data);
-    let coordinates = [];
-    let tempLayer = L.layerGroup();
-    for (let pathway of trip.pathwaySegments) {
-        //console.log(pathway);
-        // find stop with id == pathway.startPoint.id
-        let stop = await stopObject.find(x => x.id == pathway.startPoint.id);
-        // if we are on the last stop, then we need to find the end point
-        //console.log(stop);
-        await L.marker([stop.geography.coordinates[1],stop.geography.coordinates[0]]).addTo(tempLayer).setIcon(
-            L.divIcon({
-                className: 'icon-station',
-                iconSize: [16, 16],
-                iconAnchor: [8, 8],
-                popupAnchor: [0, 0],
-            })
-        ).bindTooltip(`${stop.name} <small>(${stop.id})</small>`);
-        if (pathway.endPoint.id == bus.stations[bus.stations.length - 1].id) {
-            stop = await stopObject.find(x => x.id == bus.stations[bus.stations.length - 1].id);
-            await L.marker([stop.geography.coordinates[1],stop.geography.coordinates[0]]).addTo(tempLayer).setIcon(
+        }
+        container.appendChild(table);
+        // fetch https://api.prometko.cyou/prometSplit/route/trips/${bus.tripId}
+        let trip = await fetch(BASE_API_URL + `/prometSplit/route/trips/${bus.tripId}`).then(response => response.json()).then(data => data.data);
+        let coordinates = [];
+        for (let pathway of trip.pathwaySegments) {
+            //console.log(pathway);
+            // find stop with id == pathway.startPoint.id
+            let stop = await stopObject.find(x => x.id == pathway.startPoint.id);
+            // if we are on the last stop, then we need to find the end point
+            //console.log(stop);
+            await L.marker([stop.geography.coordinates[1], stop.geography.coordinates[0]]).addTo(tempLayer).setIcon(
                 L.divIcon({
                     className: 'icon-station',
                     iconSize: [16, 16],
@@ -199,11 +206,33 @@ async function showBusInfo(bus) {
                     popupAnchor: [0, 0],
                 })
             ).bindTooltip(`${stop.name} <small>(${stop.id})</small>`);
+            if (pathway.endPoint.id == bus.stations[bus.stations.length - 1].id) {
+                stop = await stopObject.find(x => x.id == bus.stations[bus.stations.length - 1].id);
+                await L.marker([stop.geography.coordinates[1], stop.geography.coordinates[0]]).addTo(tempLayer).setIcon(
+                    L.divIcon({
+                        className: 'icon-station',
+                        iconSize: [16, 16],
+                        iconAnchor: [8, 8],
+                        popupAnchor: [0, 0],
+                    })
+                ).bindTooltip(`${stop.name} <small>(${stop.id})</small>`);
+            }
+            coordinates = await coordinates.concat(await pathway.geography.coordinates.map(x => { return x.reverse() }));
         }
-        coordinates = await coordinates.concat(await pathway.geography.coordinates.map(x => {return x.reverse()}));
+        //console.log(coordinates);
+        await L.polyline.antPath(coordinates, { "delay": 4000, color: '#102A83', weight: 6, opacity: 0.7, smoothFactor: 1 }).addTo(tempLayer);
+    } else {
+        rightdiv.innerHTML += `<p class="vehicleinfo"><b>Linija:</b> <span class="route_name_number">${bus.routecode}</span> ${bus.tripname}</p>`;
+        rightdiv.innerHTML += `<p class="vehicleinfo"><b>Zabilježen: </b>${new Date(bus.timestamp).toLocaleString('sr-RS').split(" ").reverse().join(", ")}</p>`;
+        row.appendChild(leftdiv);
+        row.appendChild(rightdiv);
+        container.appendChild(row);
+        container.innerHTML += `<hr>`;
     }
-    //console.log(coordinates);
-    await L.polyline.antPath(coordinates, {"delay": 4000, color: '#102A83', weight: 6, opacity: 0.7, smoothFactor: 1}).addTo(tempLayer);
+    routeInfo.appendChild(container);
+    bottomData.innerHTML = '';
+    bottomData.appendChild(routeInfo);
+    bottomData.hidden = false;
     polyLineLayer.clearLayers();
     polyLineLayer = await tempLayer;
     polyLineLayer.addTo(map);
