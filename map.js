@@ -32,7 +32,7 @@ async function mapf() {
 async function main() {
     mapf();
     stopObject = await fetch(BASE_API_URL + '/prometSplit/stops').then(response => response.json()).then(data => data.data);
-    busObject = await fetch('./st-tracker/buses.json').then(response => response.json());
+    busObject = await fetch('./buses.json').then(response => response.json());
     //lineObject = await fetch(BASE_API_URL + '/arrivaPiran/lines').then(response => response.json()).then(data => data.data);
     //showStops();
     while (true) {
