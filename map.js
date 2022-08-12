@@ -53,6 +53,7 @@ async function main() {
                             popupAnchor: [0, 0],
                             html: `<p class="icon">${bus.routeCode}</p> <div class="tooltip-vehicle">${bus.name.replace(/[^\d-]/g, "")}</div>`
                         }));
+                    markers[bus.id].setOpacity(1);
                 } else {
                     markers[bus.id].setIcon(
                         L.divIcon({
@@ -78,6 +79,7 @@ async function main() {
                             popupAnchor: [0, 0],
                             html: `<p class="icon">${bus.routeCode}</p> <div class="tooltip-vehicle">${bus.name.replace(/[^\d-]/g, "")}</div>`
                         }));
+                    markers[bus.id].setOpacity(1);
                 } else {
                     markers[bus.id].setIcon(
                         L.divIcon({
