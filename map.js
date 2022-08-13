@@ -64,6 +64,12 @@ async function main() {
                             html: `<p class="icon">${bus.routecode}</p> <div class="tooltip-inactive">${bus.name.replace(/[^\d-]/g, "")}</div>`
                         }));
                     markers[bus.id].setOpacity(0.5);
+                    // if its more than 15min, fade it out until 1h to 0.1
+                    if (new Date() - new Date(bus.timestamp) > 900000) {
+                        let opacity = (new Date(bus.timestamp) - new Date()) / 900000;
+                        opacity = opacity < 0.15 ? 0.15 : opacity;
+                        markers[bus.id].setOpacity(opacity);
+                    }
                 }
             } else {
                 markers[bus.id] = L.marker([bus.latitude, bus.longitude]).addTo(busLayer);
@@ -90,6 +96,12 @@ async function main() {
                             html: `<p class="icon">${bus.routecode}</p> <div class="tooltip-inactive">${bus.name.replace(/[^\d-]/g, "")}</div>`
                         }));
                     markers[bus.id].setOpacity(0.5);
+                    // if its more than 15min, fade it out until 1h to 0.1
+                    if (new Date() - new Date(bus.timestamp) > 900000) {
+                        let opacity = (new Date(bus.timestamp) - new Date()) / 900000;
+                        opacity = opacity < 0.15 ? 0.15 : opacity;
+                        markers[bus.id].setOpacity(opacity);
+                    }
                 }
                 markers[bus.id].on('click', async (e) => {
                     // generate popup content
@@ -227,7 +239,8 @@ async function showBusInfo(bus) {
         await L.polyline.antPath(coordinates, { "delay": 4000, color: '#102A83', weight: 6, opacity: 0.7, smoothFactor: 1 }).addTo(tempLayer);
     } else {
         rightdiv.innerHTML += `<p class="vehicleinfo"><b>Linija:</b> <span class="route_name_number">${bus.routecode}</span> ${bus.tripname}</p>`;
-        rightdiv.innerHTML += `<p class="vehicleinfo"><b>Zadnje zabilježen: </b>${new Date(bus.timestamp).toLocaleString('sr-RS').split(" ").reverse().join(", ")}</p>`;
+        rightdiv.innerHTML += `<p class="vehicleinfo"><b>Zabilježen: </b>${new Date(bus.timestamp).toLocaleString('sr-RS').split(" ").reverse().join(", ")}</p><hr>`;
+        rightdiv.innerHTML += `<p class="vehicleinfo">Vozilo nije aktivno, te je označena njegova zadnja poznata lokacija.</p>`;
         row.appendChild(leftdiv);
         row.appendChild(rightdiv);
         container.appendChild(row);
@@ -285,9 +298,9 @@ document.getElementById('search-input').addEventListener('keyup', async (e) => {
     //console.log(busObject);
     for (let i in markers) {
         let busData = await busObject.find(b => parseInt(b.id) == parseInt(markers[i].data.name.replace(/[^\d-]/g, "")));
-        if (markers[i].data.departureTime && (markers[i].data.routeCode.toString().toUpperCase().includes(search) 
-        || markers[i].data.tripName.toUpperCase().replace(/Š/g, 'S').replace(/Đ/g, 'D').replace(/Č/g, 'C').replace(/Ć/g, 'C').replace(/Ž/g, 'Z').includes(search) 
-        || markers[i].data.name.toUpperCase().includes(search))) {
+        if (markers[i].data.departureTime && (markers[i].data.routeCode.toString().toUpperCase().includes(search)
+            || markers[i].data.tripName.toUpperCase().replace(/Š/g, 'S').replace(/Đ/g, 'D').replace(/Č/g, 'C').replace(/Ć/g, 'C').replace(/Ž/g, 'Z').includes(search)
+            || markers[i].data.name.toUpperCase().includes(search))) {
             results.push(markers[i].data);
         } else if (busData && busData.model.toUpperCase().includes(search)) {
             results.push(markers[i].data);

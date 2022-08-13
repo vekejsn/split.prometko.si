@@ -35,7 +35,7 @@
   <div id="map" style="height:100vh"></div>
   <div id="search" class="search">
     <div class="input-group mb-3">
-      <button class="btn btn-primary" type="button" id="button-addon2" onclick="document.getElementById('sidebar').hidden = !document.getElementById('sidebar').hidden"><i class="bi bi-list"></i></button>
+      <button class="btn btn-primary" type="button" id="button-addon2" onclick="sidebar()"><i class="bi bi-list"></i></button>
       <input type="text" class="form-control font-special" id="search-input" placeholder="Pretraga"
         describedby="button-addon2">
       <div id="search-results" style="width:100%; max-height: 20vh; overflow-y: auto; margin-top:5px"></div>
@@ -44,7 +44,7 @@
   <div id="bottom-data" class="data-extend" hidden>
   </div>
   <div id="sidebar" class="sidebar" hidden>
-    <div class="exit-button" onclick="document.getElementById('sidebar').hidden = true;"><i class="bi bi-x-lg"></i>
+    <div class="exit-button" onclick="sidebar()"><i class="bi bi-x-lg"></i>
     </div>
     <h1><i class="bi bi-map-fill"></i> SplitTracker</h1>
     <hr>
@@ -55,5 +55,22 @@
 </body>
 
 <script src="map.js"></script>
-
+<script>
+  async function sidebar() {
+    if (document.getElementById('sidebar').hidden) {
+      document.getElementById('sidebar').hidden = !document.getElementById('sidebar').hidden
+      for (let i = 0; i <= 50; i++) {
+        // set width
+        document.getElementById('sidebar').style.width = `${i}vw`;
+        await delay(10);
+      }
+    } else {
+      for (let i = 50; i > 0; i--) {
+        document.getElementById('sidebar').style.width = `${i}vw`;
+        await delay(10);
+      }
+      document.getElementById('sidebar').hidden = !document.getElementById('sidebar').hidden
+    }
+  }
+</script>
 </html>

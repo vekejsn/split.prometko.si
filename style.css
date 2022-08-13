@@ -380,7 +380,6 @@ p.icon {
 
 .sidebar {
     height: 100%;
-    width: 50vw !important;
     max-width: 30rem !important;
     background-color: white;
     z-index: 10000;
