@@ -240,7 +240,7 @@ async function showBusInfo(bus) {
     } else {
         rightdiv.innerHTML += `<p class="vehicleinfo"><b>Linija:</b> <span class="route_name_number">${bus.routecode}</span> ${bus.tripname}</p>`;
         rightdiv.innerHTML += `<p class="vehicleinfo"><b>Zabilježen: </b>${new Date(bus.timestamp).toLocaleString('sr-RS').split(" ").reverse().join(", ")}</p><hr>`;
-        rightdiv.innerHTML += `<p class="vehicleinfo">Vozilo nije aktivno, te je označena njegova zadnja poznata lokacija.</p>`;
+        rightdiv.innerHTML += `<p class="vehicleinfo">Vozilo nije aktivno te je označena njegova zadnja poznata lokacija.</p>`;
         row.appendChild(leftdiv);
         row.appendChild(rightdiv);
         container.appendChild(row);
