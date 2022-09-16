@@ -616,6 +616,134 @@
         "imageUrl": "https://www.autobusi.org/forum/index.php?action=dlattach;topic=24930.0;attach=85230;image"
     },
     {
+        "id": "77",
+        "model": "AS Domžale Rapido",
+        "type": "Minibus",
+        "plates": "ST-1692-AD",
+        "lowFloor": false,
+        "imageUrl": "https://autobusi.org/forum/index.php?action=dlattach;topic=24174.0;attach=87681;fs=84177;image"
+    },
+    {
+        "id": "78",
+        "model": "AS Domžale Rapido",
+        "type": "Minibus",
+        "plates": "ST-1679-AD",
+        "lowFloor": false,
+        "imageUrl": "https://autobusi.org/forum/index.php?action=dlattach;topic=24174.0;attach=87681;fs=84177;image"
+    },
+    {
+        "id": "79",
+        "model": "AS Domžale Rapido",
+        "type": "Minibus",
+        "plates": "ST-1681-AD",
+        "lowFloor": false,
+        "imageUrl": "https://autobusi.org/forum/index.php?action=dlattach;topic=24174.0;attach=87681;fs=84177;image"
+    },
+    {
+        "id": "80",
+        "model": "AS Domžale Rapido",
+        "type": "Minibus",
+        "plates": "ST-1684-AD",
+        "lowFloor": false,
+        "imageUrl": "https://autobusi.org/forum/index.php?action=dlattach;topic=24174.0;attach=87681;fs=84177;image"
+    },
+    {
+        "id": "81",
+        "model": "AS Domžale Rapido",
+        "type": "Minibus",
+        "plates": "ST-1686-AD",
+        "lowFloor": false,
+        "imageUrl": "https://autobusi.org/forum/index.php?action=dlattach;topic=24174.0;attach=87681;fs=84177;image"
+    },
+    {
+        "id": "82",
+        "model": "AS Domžale Rapido",
+        "type": "Minibus",
+        "plates": "ST-1685-AD",
+        "lowFloor": false,
+        "imageUrl": "https://autobusi.org/forum/index.php?action=dlattach;topic=24174.0;attach=87681;fs=84177;image"
+    },
+    {
+        "id": "83",
+        "model": "MB O530 G Citaro 2",
+        "type": "Zglobni gradski autobus",
+        "plates": "ST-1695-AD",
+        "lowFloor": true,
+        "imageUrl": "https://autobusi.org/forum/index.php?action=dlattach;topic=24174.0;attach=87571;fs=78435;image"
+    },
+    {
+        "id": "84",
+        "model": "MB O530 G Citaro 2",
+        "type": "Zglobni gradski autobus",
+        "plates": "ST-1697-AD",
+        "lowFloor": true,
+        "imageUrl": "https://autobusi.org/forum/index.php?action=dlattach;topic=24174.0;attach=87571;fs=78435;image"
+    },
+    {
+        "id": "85",
+        "model": "MB O530 G Citaro 2",
+        "type": "Zglobni gradski autobus",
+        "plates": "ST-1687-AD",
+        "lowFloor": true,
+        "imageUrl": "https://autobusi.org/forum/index.php?action=dlattach;topic=24174.0;attach=87571;fs=78435;image"
+    },
+    {
+        "id": "86",
+        "model": "MB O530 G Citaro 2",
+        "type": "Zglobni gradski autobus",
+        "plates": "ST-1693-AD",
+        "lowFloor": true,
+        "imageUrl": "https://autobusi.org/forum/index.php?action=dlattach;topic=24174.0;attach=87571;fs=78435;image"
+    },
+    {
+        "id": "87",
+        "model": "MB O530 G Citaro 2",
+        "type": "Zglobni gradski autobus",
+        "plates": "ST-1703-AD",
+        "lowFloor": true,
+        "imageUrl": "https://autobusi.org/forum/index.php?action=dlattach;topic=24174.0;attach=87571;fs=78435;image"
+    },
+    {
+        "id": "88",
+        "model": "MB O530 G Citaro 2",
+        "type": "Zglobni gradski autobus",
+        "plates": "ST-1698-AD",
+        "lowFloor": true,
+        "imageUrl": "https://autobusi.org/forum/index.php?action=dlattach;topic=24174.0;attach=87571;fs=78435;image"
+    },
+    {
+        "id": "89",
+        "model": "MB O530 G Citaro 2",
+        "type": "Zglobni gradski autobus",
+        "plates": "ST-4185-AD",
+        "lowFloor": true,
+        "imageUrl": "https://autobusi.org/forum/index.php?action=dlattach;topic=24174.0;attach=87571;fs=78435;image"
+    },
+    {
+        "id": "90",
+        "model": "MB O530 G Citaro 2",
+        "type": "Zglobni gradski autobus",
+        "plates": "ST-1694-AD",
+        "lowFloor": true,
+        "imageUrl": "https://autobusi.org/forum/index.php?action=dlattach;topic=24174.0;attach=87571;fs=78435;image"
+    },
+    {
+        "id": "91",
+        "model": "MB O530 G Citaro 2",
+        "type": "Zglobni gradski autobus",
+        "plates": "ST-4184-AD",
+        "lowFloor": true,
+        "imageUrl": "https://autobusi.org/forum/index.php?action=dlattach;topic=24174.0;attach=87571;fs=78435;image"
+    },
+    {
+        "id": "92",
+        "model": "MB O530 G Citaro 2",
+        "type": "Zglobni gradski autobus",
+        "plates": "ST-1706-AD",
+        "lowFloor": true,
+        "imageUrl": "https://autobusi.org/forum/index.php?action=dlattach;topic=24174.0;attach=87571;fs=78435;image"
+    },
+    {
         "id": "197",
         "model": "MAN SÜ 313",
         "type": "Solo prigradski autobus",

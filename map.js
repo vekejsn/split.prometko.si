@@ -4,7 +4,7 @@ let stopLayer = L.layerGroup().addTo(map);
 let polyLineLayer = L.layerGroup().addTo(map);
 let markers = [];
 let stopMarkers = [];
-let stopObject = [];
+let     stopObject = [];
 let routeObject = [];
 let lineObject = [];
 let busObject = [];
@@ -44,7 +44,7 @@ async function main() {
                 markers[bus.id].setLatLng([bus.latitude, bus.longitude]);
                 markers[bus.id].data = bus;
                 markers[bus.id].id = bus.id;
-                if (bus.departureTime) {
+                if (bus.stations) {
                     markers[bus.id].setIcon(
                         L.divIcon({
                             className: 'icon-vehicle',
@@ -76,7 +76,7 @@ async function main() {
                 // check last letter of stop name - if it's B, then use a different colour
                 markers[bus.id].data = bus;
                 markers[bus.id].id = bus.id;
-                if (bus.departureTime) {
+                if (bus.stations) {
                     markers[bus.id].setIcon(
                         L.divIcon({
                             className: 'icon-vehicle',
@@ -124,7 +124,7 @@ async function showBusInfo(bus) {
     if (busData == undefined) {
         busData = {
             model: "Nepoznat autobus",
-            imageUrl: "https://i.imgur.com/Sq32zSp.png",
+            imageUrl: "./img/neznam.png",
             unknown: true
         }
     }
@@ -142,7 +142,7 @@ async function showBusInfo(bus) {
     rightdiv.className = 'col-sm-9';
     rightdiv.innerHTML += `<br class="desktop-hidden" style="height:0.5rem"><h2 class="vehicleinfo">${bus.name.replace(/[^\d-]/g, "")} ${busData.unknown ? "" : `(${busData.plates})`}</h2>`;
     rightdiv.innerHTML += `<small class="vehicleinfo">${busData.unknown ? busData.model : `${busData.model} (${busData.type})`}</small><hr>`
-    if (bus.departureTime) {
+    if (bus.stations) {
         rightdiv.innerHTML += `<p class="vehicleinfo"><b>Linija:</b> <span class="route_name_number">${bus.routeCode}</span> ${bus.tripName}</p>`;
         if (bus.nextStopId) {
             // resolve the stop
@@ -206,7 +206,7 @@ async function showBusInfo(bus) {
         }
         container.appendChild(table);
         // fetch https://api.prometko.cyou/prometSplit/route/trips/${bus.tripId}
-        let trip = await fetch(BASE_API_URL + `/prometSplit/route/trips/${bus.tripId}`).then(response => response.json()).then(data => data.data);
+        let trip = await fetch(BASE_API_URL + `/prometSplit/route/trips/${bus.serviceCalendarId}`).then(response => response.json()).then(data => data.data);
         let coordinates = [];
         for (let pathway of trip.pathwaySegments) {
             //console.log(pathway);
@@ -298,7 +298,7 @@ document.getElementById('search-input').addEventListener('keyup', async (e) => {
     //console.log(busObject);
     for (let i in markers) {
         let busData = await busObject.find(b => parseInt(b.id) == parseInt(markers[i].data.name.replace(/[^\d-]/g, "")));
-        if (markers[i].data.departureTime && (markers[i].data.routeCode.toString().toUpperCase().includes(search)
+        if (markers[i].data.stations && (markers[i].data.routeCode.toString().toUpperCase().includes(search)
             || markers[i].data.tripName.toUpperCase().replace(/Š/g, 'S').replace(/Đ/g, 'D').replace(/Č/g, 'C').replace(/Ć/g, 'C').replace(/Ž/g, 'Z').includes(search)
             || markers[i].data.name.toUpperCase().includes(search))) {
             results.push(markers[i].data);
@@ -321,7 +321,7 @@ document.getElementById('search-input').addEventListener('keyup', async (e) => {
     results.forEach(async result => {
         let li = document.createElement('li');
         li.className = 'list-group-item';
-        li.innerHTML = result.departureTime ? `<span class="route_name_number">${result.routeCode}</span> g.br. <b>${result.name.replace(/[^\d-]/g, "")}</b>` : `g.br. <b>${result.name.replace(/[^\d-]/g, "")}</b>`;
+        li.innerHTML = result.stations ? `<span class="route_name_number">${result.routeCode}</span> g.br. <b>${result.name.replace(/[^\d-]/g, "")}</b>` : `g.br. <b>${result.name.replace(/[^\d-]/g, "")}</b>`;
         li.addEventListener('click', async (e) => {
             // find marker with same id, and center on it on zoom level 16
             document.getElementById('search-results').innerHTML = '';
