@@ -9,7 +9,7 @@ let routeObject = [];
 let lineObject = [];
 let busObject = [];
 
-let BASE_API_URL = "https://api.prometko.cyou"
+let BASE_API_URL = "https://api.prometko.cyou" // https://api.prometko.cyou
 
 const delay = (ms) => { return new Promise(resolve => setTimeout(resolve, ms)); }
 
