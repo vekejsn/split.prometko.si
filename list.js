@@ -49,7 +49,7 @@ window.onload = async function () {
             cardText.innerHTML += `<p class="vehicleinfo"><b>Zadnja linija: </b><b class="route_name_number">${data[i].routecode}</b> ${data[i].tripname}</p>`;
             cardText.innerHTML += `<hr class="vehicleinfo">`;
         }
-        cardText.innerHTML += `<p class="vehicleinfo"><b>Zabilježen: </b>${new Date(data[i].timestamp).toLocaleString('sr-RS').split(" ").reverse().join(", ")}</p>`;
+        cardText.innerHTML += `<p class="vehicleinfo"><b>Zabilježen: </b>${new Date(data[i].timestamp).toLocaleString('sr-RS').split(" ").join(", u ")}.</p>`;
         diver.appendChild(cardText);
         let imgdiv = document.createElement('div');
         imgdiv.className = 'col-md-3';

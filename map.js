@@ -154,7 +154,7 @@ async function showBusInfo(bus) {
             let nextStop = stopObject.find(stop => stop.id == bus.currentStopId);
             rightdiv.innerHTML += `<p class="vehicleinfo"><b>Trenutna stanica:</b> ${nextStop.name} <small>(${nextStop.id})</small></p>`;
         }
-        rightdiv.innerHTML += `<p class="vehicleinfo"><b>Zabilježen: </b>${new Date(bus.timestamp).toLocaleString('sr-RS').split(" ").reverse().join(", ")}</p>`;
+        rightdiv.innerHTML += `<p class="vehicleinfo"><b>Zabilježen: </b>${new Date(bus.timestamp).toLocaleString('sr-RS').split(" ").join(", u ")}</p>`;
         row.appendChild(leftdiv);
         row.appendChild(rightdiv);
         container.appendChild(row);
@@ -239,7 +239,7 @@ async function showBusInfo(bus) {
         await L.polyline.antPath(coordinates, { "delay": 4000, color: '#102A83', weight: 6, opacity: 0.7, smoothFactor: 1 }).addTo(tempLayer);
     } else {
         rightdiv.innerHTML += `<p class="vehicleinfo"><b>Linija:</b> <span class="route_name_number">${bus.routecode}</span> ${bus.tripname}</p>`;
-        rightdiv.innerHTML += `<p class="vehicleinfo"><b>Zabilježen: </b>${new Date(bus.timestamp).toLocaleString('sr-RS').split(" ").reverse().join(", ")}</p><hr>`;
+        rightdiv.innerHTML += `<p class="vehicleinfo"><b>Zabilježen: </b>${new Date(bus.timestamp).toLocaleString('sr-RS').split(" ").join(", u ")}</p><hr>`;
         rightdiv.innerHTML += `<p class="vehicleinfo">Vozilo nije aktivno te je označena njegova zadnja poznata lokacija.</p>`;
         row.appendChild(leftdiv);
         row.appendChild(rightdiv);
